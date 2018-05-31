@@ -31,11 +31,17 @@ program
     } catch (err) {
       try {
       shelljs.mkdir(finallyPath)
-      shelljs.cp('-r', path.resolve(__dirname, '..', 'boilerplates', 'App', '*'), finallyPath)
+      shelljs.cp('-r', path.resolve(__dirname, '../boilerplates/App/*'), finallyPath)
+      shelljs.cp('-r', path.resolve(__dirname, '../boilerplates/App/.*'), finallyPath)
 
-        console.info(chalk.blue('✅ create success!'))
-        console.info(chalk.blue(`please \`cd ${finallyPath}\` and \`yarn\``))
-        console.info(chalk.green(`please add \`name\` property to \`package.json\``))
+        console.group('====================  ✅ create success! ======================')
+        console.log('Congratulations on creating a project, but you should do somthing before develop it.')
+        console.log()
+        console.info(chalk.green(`1. please \`cd ${finallyPath}\``))
+        console.info(chalk.green(`2. please add \`name\` property to \`package.json\``))
+        console.info(chalk.green(`3. run \`yarn\` command`))
+        console.log()
+        console.groupEnd()
       } catch (err) {
         console.error(chalk.red(`Error with replace project name: ${err}`))
       }
