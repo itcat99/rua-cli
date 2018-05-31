@@ -1,6 +1,6 @@
 {
   "name": "rua-cli",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "bin": "bin/index.js",
   "repository": "https://github.com/itcat99/rua-cli.git",
   "author": "FreMaNgo <boping2010@gmail.com>",

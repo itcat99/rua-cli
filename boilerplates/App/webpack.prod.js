@@ -1,8 +1,6 @@
 const commonConfig = require('./webpack.common');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const path = require('path');
-
 module.exports = Object.assign({}, commonConfig, {
   mode: 'production',
   optimization: {
@@ -13,5 +11,5 @@ module.exports = Object.assign({}, commonConfig, {
         sourceMap: true, // set to true if you want JS source maps
       }),
     ],
-  }
+  },
 });

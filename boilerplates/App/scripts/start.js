@@ -1,38 +1,54 @@
 /* eslint no-console:0 */
-const commonConfig = require('../webpack.common');
-const path = require('path');
-const webpack = require('webpack');
-const webpackDevServer = require('webpack-dev-server');
-const DashboardPlugin = require('webpack-dashboard/plugin');
+const serve = require('webpack-serve');
+const config = require('../webpack.dev');
 const chalk = require('chalk');
-const config = require('../config')
+const history = require('connect-history-api-fallback');
+const convert = require('koa-connect');
+const webpackServeWaitpage = require('webpack-serve-waitpage');
 
-const {public} = config
+module.exports = port => {
+  serve({
+    config,
+    add: (app, middleware, options) => {
+      app.use(
+        webpackServeWaitpage(options, {
+          title: 'waiting for compilation...',
+          theme: 'dark',
+        }),
+      );
 
-module.exports = ({ port }) => {
-  const config = Object.assign({}, commonConfig, {
-    mode: 'development',
-    devtool: 'source-map',
-    plugins: [
-      new webpack.NamedModulesPlugin(),
-      new DashboardPlugin(),
-      new webpack.HotModuleReplacementPlugin(),
-    ],
-  });
-
-  const options = {
-    contentBase: public,
+      app.use(
+        convert(
+          history({
+            verbose: true,
+            logger: console.log.bind(console),
+          }),
+        ),
+      );
+    },
+    content: config.output.path,
+    clipboard: true,
     hot: true,
-    host: 'localhost',
-  };
+    port,
+  }).then(server => {
+    let port;
+    server.on('listening', app => {
+      port = app.options.port;
+    });
 
-  webpackDevServer.addDevServerEntrypoints(config, options);
-  const compiler = webpack(config);
-  const server = new webpackDevServer(compiler, options);
-
-  server.listen(port, 'localhost', err => {
-    if (err) throw new Error(err);
-
-    console.log(chalk.green(`server is running to http://localhost:${port}`));
+    server.on('build-finished', () => {
+      setTimeout(() => {
+        console.log();
+        console.log(`=========== ✅  build finished!!! ===========`);
+        console.log();
+        console.log(
+          chalk.green(
+            `server is running to http://localhost:${port} and copied!!! `,
+          ),
+        );
+        console.log();
+        console.log(`=============================================`);
+      }, 800);
+    });
   });
 };
